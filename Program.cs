@@ -1,3 +1,4 @@
+using BankListAPI.VsCode.Configuration;
 using BankListAPI.VsCode.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -16,6 +17,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 });
 
+
+//Introduce Automapper Service so that it can be used globally.
+builder.Services.AddAutoMapper(typeof(MapperConfig));
+
+//Introduce connectionString configuration & Dbcontext Service
 var connectionString = builder.Configuration.GetConnectionString("BankListDbConnectionString");
 builder.Services.AddDbContext<BankListDbContext>(options =>
 {
