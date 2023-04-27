@@ -1,5 +1,7 @@
 using BankListAPI.VsCode.Configuration;
+using BankListAPI.VsCode.Contracts;
 using BankListAPI.VsCode.Data;
+using BankListAPI.VsCode.Repository;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -20,6 +22,10 @@ builder.Services.AddCors(options =>
 
 //Introduce Automapper Service so that it can be used globally.
 builder.Services.AddAutoMapper(typeof(MapperConfig));
+
+//Add Repository
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<ICountriesRepository, CountryRepository>();
 
 //Introduce connectionString configuration & Dbcontext Service
 var connectionString = builder.Configuration.GetConnectionString("BankListDbConnectionString");

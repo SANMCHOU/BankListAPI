@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using BankListAPI.VsCode.Data;
 using BankListAPI.VsCode.Models.Country;
 using AutoMapper;
+using BankListAPI.VsCode.Contracts;
+using System.Diagnostics.Metrics;
 
 namespace BankListAPI.VsCode.Controllers
 {
@@ -15,12 +17,12 @@ namespace BankListAPI.VsCode.Controllers
     [ApiController]
     public class CountriesController : ControllerBase
     {
-        private readonly BankListDbContext _context;
+        private readonly ICountriesRepository _countriesRepository;
         private readonly IMapper _mapper;
 
-        public CountriesController(BankListDbContext context, IMapper mapper)
+        public CountriesController(ICountriesRepository countriesRepository, IMapper mapper)
         {
-            _context = context;
+            _countriesRepository = countriesRepository;
             _mapper = mapper;
         }
 
@@ -28,13 +30,12 @@ namespace BankListAPI.VsCode.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
-          if (_context.Countries == null)
+          if (_countriesRepository == null)
           {
               return NotFound();
           }
 
-            var countires = await _context.Countries.ToListAsync();
-            //Automapper
+            var countires = await _countriesRepository.GetAllAsync();
             var records = _mapper.Map<List<GetCountryDto>>(countires);
             return Ok(records);
         }
@@ -43,15 +44,12 @@ namespace BankListAPI.VsCode.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CountryDto>> GetCountry(int id)
         {
-          if (_context.Countries == null)
+          if (_countriesRepository == null)
           {
               return NotFound();
           }
 
-            //Default EF syntax
-            //var country = await _context.Countries.FindAsync(id);
-            ////Automapper: Include banks for which the id matched the bank IDs
-            var country = await _context.Countries.Include(s => s.Banks).FirstOrDefaultAsync(q => q.Id == id);
+            var country = await _countriesRepository.GetDetails(id);
 
             if (country == null)
             {
@@ -72,22 +70,20 @@ namespace BankListAPI.VsCode.Controllers
                 return BadRequest();
             }
 
-            //_context.Entry(country).State = EntityState.Modified;
-            //Automapper
-            var country = await _context.Countries.FindAsync(id);
+            var country = await _countriesRepository.GetAsync(id);
             if (country == null)
             {
                 return NotFound();
             }
-            _mapper.Map<UpdateCountryDto>(country);
+            _mapper.Map(updateCountry,country);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _countriesRepository.UpdateAsync(country);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CountryExists(id))
+                if (! await CountryExists(id))
                 {
                     return NotFound();
                 }
@@ -103,25 +99,16 @@ namespace BankListAPI.VsCode.Controllers
         // POST: api/Countries
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createCountry)
+        public async Task<ActionResult<CreateCountryDto>> PostCountry(CreateCountryDto createCountry)
         {
-            //overposting attacks:
-            //1. Adding Data Transfer Object.
-            //var country = new Country()
-            //{
-            //    Name = createCountry.Name,
-            //    ShortName = createCountry.ShortName,
-            //};
-
-            //2. Set automapper to protect from overposting attacks 
             var country = _mapper.Map<Country>(createCountry);
 
-            if (_context.Countries == null)
+            if (_countriesRepository == null)
             {
               return Problem("Entity set 'BankListDbContext.Countries'  is null.");
             }
-            _context.Countries.Add(country);
-            await _context.SaveChangesAsync();
+
+            await _countriesRepository.AddAsync(country);
 
             return CreatedAtAction("GetCountry", new { id = country.Id }, country);
         }
@@ -130,25 +117,24 @@ namespace BankListAPI.VsCode.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCountry(int id)
         {
-            if (_context.Countries == null)
+            if (_countriesRepository == null)
             {
                 return NotFound();
             }
-            var country = await _context.Countries.FindAsync(id);
+            var country = await _countriesRepository.GetAsync(id);
             if (country == null)
             {
                 return NotFound();
             }
 
-            _context.Countries.Remove(country);
-            await _context.SaveChangesAsync();
+            await _countriesRepository.DeleteAsync(id);
 
             return NoContent();
         }
 
-        private bool CountryExists(int id)
+        private async Task<bool> CountryExists(int id)
         {
-            return (_context.Countries?.Any(e => e.Id == id)).GetValueOrDefault();
+            return await (_countriesRepository.Exists(id));
         }
     }
 }
