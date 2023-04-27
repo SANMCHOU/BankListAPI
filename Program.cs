@@ -26,6 +26,7 @@ builder.Services.AddAutoMapper(typeof(MapperConfig));
 //Add Repository
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ICountriesRepository, CountryRepository>();
+builder.Services.AddScoped<IBanksRepository, BanksRepository>();
 
 //Introduce connectionString configuration & Dbcontext Service
 var connectionString = builder.Configuration.GetConnectionString("BankListDbConnectionString");

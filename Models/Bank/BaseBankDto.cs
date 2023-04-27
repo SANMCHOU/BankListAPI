@@ -1,21 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BankListAPI.VsCode.Data
+namespace BankListAPI.VsCode.Models.Bank
 {
-    public class Bank
+    public class BaseBankDto
     {
-        public int Id { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
         public string Address { get; set; }
         public double? Rating { get; set; }
-
-        [ForeignKey(nameof(CountryId))]
         [Required]
-        [Range(1, int.MaxValue)]
-        public int CountryId { get; set; }
-        public Country CountryName { get; set; }
+        [Range(1,int.MaxValue)]
+        public int CountryId { get; set;}
     }
 }

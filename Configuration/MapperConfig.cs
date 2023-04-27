@@ -13,6 +13,8 @@ namespace BankListAPI.VsCode.Configuration
             CreateMap<Country, CountryDto>().ReverseMap();
             CreateMap<Bank, BankDto>().ReverseMap();
             CreateMap<Country, UpdateCountryDto>().ReverseMap();
+            CreateMap<Bank, BaseBankDto>().ReverseMap();
+            CreateMap<Bank, CreateBankDto>().ReverseMap();
         }
     }
 }
