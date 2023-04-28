@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankListAPI.VsCode.Data
 {
-    public class BankListDbContext : DbContext
+    public class BankListDbContext : IdentityDbContext<ApiUser>
     {
         public BankListDbContext(DbContextOptions options) : base(options)
         {

@@ -2,6 +2,7 @@ using BankListAPI.VsCode.Configuration;
 using BankListAPI.VsCode.Contracts;
 using BankListAPI.VsCode.Data;
 using BankListAPI.VsCode.Repository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -34,6 +35,11 @@ builder.Services.AddDbContext<BankListDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
+
+//Introduce Indentity core
+builder.Services.AddIdentityCore<IdentityUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<BankListDbContext>();
 
 var app = builder.Build();
 
