@@ -9,6 +9,17 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//Introduce connectionString configuration & Dbcontext Service
+var connectionString = builder.Configuration.GetConnectionString("BankListDbConnectionString");
+builder.Services.AddDbContext<BankListDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
+
+//Introduce Indentity core
+builder.Services.AddIdentityCore<ApiUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<BankListDbContext>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -20,6 +31,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 });
 
+builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
 //Introduce Automapper Service so that it can be used globally.
 builder.Services.AddAutoMapper(typeof(MapperConfig));
@@ -28,18 +40,7 @@ builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ICountriesRepository, CountryRepository>();
 builder.Services.AddScoped<IBanksRepository, BanksRepository>();
-
-//Introduce connectionString configuration & Dbcontext Service
-var connectionString = builder.Configuration.GetConnectionString("BankListDbConnectionString");
-builder.Services.AddDbContext<BankListDbContext>(options =>
-{
-    options.UseSqlServer(connectionString);
-});
-
-//Introduce Indentity core
-builder.Services.AddIdentityCore<IdentityUser>()
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<BankListDbContext>();
+builder.Services.AddScoped<IAuthManager, AuthManager>();
 
 var app = builder.Build();
 
@@ -51,7 +52,6 @@ if (app.Environment.IsDevelopment())
 }
 
 //invoke instance of buidler crx and lc- logger configuration
-builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
 app.UseSerilogRequestLogging();
 

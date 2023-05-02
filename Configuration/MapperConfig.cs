@@ -2,6 +2,7 @@
 using BankListAPI.VsCode.Data;
 using BankListAPI.VsCode.Models.Bank;
 using BankListAPI.VsCode.Models.Country;
+using BankListAPI.VsCode.Models.User;
 
 namespace BankListAPI.VsCode.Configuration
 {
@@ -15,6 +16,8 @@ namespace BankListAPI.VsCode.Configuration
             CreateMap<Country, UpdateCountryDto>().ReverseMap();
             CreateMap<Bank, BaseBankDto>().ReverseMap();
             CreateMap<Bank, CreateBankDto>().ReverseMap();
+
+            CreateMap<ApiUserDto,ApiUser>().ReverseMap();
         }
     }
 }
