@@ -38,5 +38,25 @@ namespace BankListAPI.VsCode.Controllers
             }
             return Ok();
         }
+
+        //POST: api/controller/login
+        [HttpPost]
+        [Route("login")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            if (loginDto == null)
+            {
+                return BadRequest();
+            }
+            var isValidUser = await _authManager.Login(loginDto);
+            if (!isValidUser)
+            {
+                return Unauthorized(); //401
+            }
+            return Ok(isValidUser);
+        }
     }
 }
