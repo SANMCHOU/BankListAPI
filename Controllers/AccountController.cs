@@ -1,5 +1,6 @@
 ﻿using BankListAPI.VsCode.Contracts;
 using BankListAPI.VsCode.Models.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,12 +52,32 @@ namespace BankListAPI.VsCode.Controllers
             {
                 return BadRequest();
             }
-            var isValidUser = await _authManager.Login(loginDto);
-            if (!isValidUser)
+            var isValidUserResponse = await _authManager.Login(loginDto);
+            if (isValidUserResponse.Token == null)
             {
                 return Unauthorized(); //401
             }
-            return Ok(isValidUser);
+            return Ok(isValidUserResponse);
+        }
+
+        //POST: api/controller/refreshToken
+        [HttpPost]
+        [Route("refreshToken")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> RefreshToken([FromBody] AuthResponseDto req)
+        {
+            if (req == null)
+            {
+                return BadRequest();
+            }
+            var isValidUserResponse = await _authManager.VerifyRefreshToken(req);
+            if (isValidUserResponse.Token == null)
+            {
+                return Unauthorized(); //401
+            }
+            return Ok(isValidUserResponse);
         }
     }
 }

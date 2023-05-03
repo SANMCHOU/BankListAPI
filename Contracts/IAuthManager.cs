@@ -1,4 +1,5 @@
-﻿using BankListAPI.VsCode.Models.User;
+﻿using BankListAPI.VsCode.Data;
+using BankListAPI.VsCode.Models.User;
 using Microsoft.AspNetCore.Identity;
 
 namespace BankListAPI.VsCode.Contracts
@@ -7,6 +8,10 @@ namespace BankListAPI.VsCode.Contracts
     {
         Task<IEnumerable<IdentityError>> Register(ApiUserDto userDto);
 
-        Task<bool> Login(LoginDto loginDto);
+        Task<AuthResponseDto> Login(LoginDto loginDto);
+
+        Task<string> GenerateToken(ApiUser apiUser);
+        Task<string> CreateRefreshToken(ApiUser user);
+        Task<AuthResponseDto> VerifyRefreshToken(AuthResponseDto req);
     }
 }

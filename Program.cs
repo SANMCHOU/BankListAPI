@@ -2,9 +2,13 @@ using BankListAPI.VsCode.Configuration;
 using BankListAPI.VsCode.Contracts;
 using BankListAPI.VsCode.Data;
 using BankListAPI.VsCode.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,7 @@ builder.Services.AddDbContext<BankListDbContext>(options =>
 //Introduce Indentity core
 builder.Services.AddIdentityCore<ApiUser>()
                 .AddRoles<IdentityRole>()
+                .AddTokenProvider<DataProtectorTokenProvider<ApiUser>>("BankListApi")
                 .AddEntityFrameworkStores<BankListDbContext>();
 
 builder.Services.AddControllers();
@@ -42,6 +47,25 @@ builder.Services.AddScoped<ICountriesRepository, CountryRepository>();
 builder.Services.AddScoped<IBanksRepository, BanksRepository>();
 builder.Services.AddScoped<IAuthManager, AuthManager>();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience= true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidIssuer = builder.Configuration["JwtSettings: Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings: Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])),
+    };
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -58,6 +82,8 @@ app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
