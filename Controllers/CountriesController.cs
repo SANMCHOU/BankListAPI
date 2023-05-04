@@ -10,6 +10,7 @@ using BankListAPI.VsCode.Models.Country;
 using AutoMapper;
 using BankListAPI.VsCode.Contracts;
 using System.Diagnostics.Metrics;
+using BankListAPI.VsCode.Exceptions;
 
 namespace BankListAPI.VsCode.Controllers
 {
@@ -53,7 +54,7 @@ namespace BankListAPI.VsCode.Controllers
 
             if (country == null)
             {
-                return NotFound();
+                throw new NotFoundExceptions(nameof(GetCountry), id);
             }
             var record = _mapper.Map<CountryDto>(country);
 
@@ -73,7 +74,7 @@ namespace BankListAPI.VsCode.Controllers
             var country = await _countriesRepository.GetAsync(id);
             if (country == null)
             {
-                return NotFound();
+                throw new NotFoundExceptions(nameof(PutCountry), id);
             }
             _mapper.Map(updateCountry,country);
 

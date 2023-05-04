@@ -11,9 +11,11 @@ namespace BankListAPI.VsCode.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthManager _authManager;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IAuthManager authManager) { 
+        public AccountController(IAuthManager authManager, ILogger<AccountController> logger) { 
             this._authManager = authManager;
+            this._logger = logger;
         }
 
         //POST: api/controller/register
@@ -24,20 +26,31 @@ namespace BankListAPI.VsCode.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Register([FromBody] ApiUserDto apiUserDto)
         {
-            if (apiUserDto == null)
+            _logger.LogInformation($"Registration attempt for {apiUserDto.Email}");
+            try
             {
-                return BadRequest();
-            }
-            var errors = await _authManager.Register(apiUserDto);
-            if(errors.Any())
-            {
-                foreach (var error in errors)
+                if (apiUserDto == null)
                 {
-                    ModelState.AddModelError(error.Code, error.Description);
+                    return BadRequest();
                 }
-                return BadRequest(ModelState);
+                var errors = await _authManager.Register(apiUserDto);
+                if (errors.Any())
+                {
+                    foreach (var error in errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return BadRequest(ModelState);
+                }
+                return Ok();
             }
-            return Ok();
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, $"Something went wrong in the {nameof(Register)} - user registration attempt for {apiUserDto.Email}");
+
+                return Problem($"Something went wrong in the {nameof(Register)} - Please contact support", statusCode: 500);
+            }
+           
         }
 
         //POST: api/controller/login
@@ -48,16 +61,26 @@ namespace BankListAPI.VsCode.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            if (loginDto == null)
+            _logger.LogInformation($"Login attempt for {loginDto.Email}");
+            try
             {
-                return BadRequest();
+                if (loginDto == null)
+                {
+                    return BadRequest();
+                }
+                var isValidUserResponse = await _authManager.Login(loginDto);
+                if (isValidUserResponse.Token == null)
+                {
+                    return Unauthorized(); //401
+                }
+                return Ok(isValidUserResponse);
             }
-            var isValidUserResponse = await _authManager.Login(loginDto);
-            if (isValidUserResponse.Token == null)
+            catch (Exception ex)
             {
-                return Unauthorized(); //401
+                _logger.LogInformation(ex, $"Something went wrong in the {nameof(Login)} - user login attempt for {loginDto.Email}");
+                return Problem($"Something went wrong in the {nameof(Login)} - Please contact support", statusCode: 500);
             }
-            return Ok(isValidUserResponse);
+           
         }
 
         //POST: api/controller/refreshToken

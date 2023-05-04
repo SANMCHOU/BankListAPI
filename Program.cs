@@ -1,6 +1,7 @@
 using BankListAPI.VsCode.Configuration;
 using BankListAPI.VsCode.Contracts;
 using BankListAPI.VsCode.Data;
+using BankListAPI.VsCode.Middlewares;
 using BankListAPI.VsCode.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -75,8 +76,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//invoke instance of buidler crx and lc- logger configuration
+app.UseMiddleware<ExceptionMiddleware>();
 
+//invoke instance of buidler crx and lc- logger configuration
 app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
