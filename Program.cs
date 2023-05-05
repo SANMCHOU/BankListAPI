@@ -38,6 +38,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 });
 
+//Versioning
 builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified= true;
@@ -67,6 +68,7 @@ builder.Services.AddScoped<ICountriesRepository, CountryRepository>();
 builder.Services.AddScoped<IBanksRepository, BanksRepository>();
 builder.Services.AddScoped<IAuthManager, AuthManager>();
 
+//Autentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -85,6 +87,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])),
     };
 });
+
+
 
 var app = builder.Build();
 
