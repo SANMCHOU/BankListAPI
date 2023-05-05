@@ -11,6 +11,7 @@ using AutoMapper;
 using BankListAPI.VsCode.Contracts;
 using System.Diagnostics.Metrics;
 using BankListAPI.VsCode.Exceptions;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace BankListAPI.VsCode.Controllers
 {
@@ -31,6 +32,7 @@ namespace BankListAPI.VsCode.Controllers
 
         // GET: api/Countries
         [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
           if (_countriesRepository == null)
