@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BankListAPI.VsCode.Data;
-using BankListAPI.VsCode.Models.Country;
 using AutoMapper;
-using BankListAPI.VsCode.Contracts;
-using System.Diagnostics.Metrics;
-using BankListAPI.VsCode.Exceptions;
-using BankListAPI.VsCode.Models;
+using BankListAPI.VsCode.Core.Contracts;
+using BankListAPI.VsCode.Core.Models.Country;
+using BankListAPI.VsCode.Core.Models;
+using BankListAPI.VsCode.Core.Exceptions;
+using BankListAPI.VsCode.Data.Data;
 
 namespace BankListAPI.VsCode.Controllers
 {

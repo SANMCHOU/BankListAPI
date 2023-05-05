@@ -1,5 +1,7 @@
-﻿using BankListAPI.VsCode.Contracts;
-using BankListAPI.VsCode.Models.User;
+﻿using BankListAPI.VsCode.Core.Contracts;
+using BankListAPI.VsCode.Core.Contracts;
+using BankListAPI.VsCode.Core.Models.User;
+using BankListAPI.VsCode.Core.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

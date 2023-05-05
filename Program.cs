@@ -1,8 +1,9 @@
-using BankListAPI.VsCode.Configuration;
-using BankListAPI.VsCode.Contracts;
+using BankListAPI.VsCode.Core.Configuration;
+using BankListAPI.VsCode.Core.Contracts;
+using BankListAPI.VsCode.Core.Middlewares;
+using BankListAPI.VsCode.Core.Repository;
 using BankListAPI.VsCode.Data;
-using BankListAPI.VsCode.Middlewares;
-using BankListAPI.VsCode.Repository;
+using BankListAPI.VsCode.Data.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

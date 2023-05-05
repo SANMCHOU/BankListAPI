@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BankListAPI.VsCode.Data;
-using BankListAPI.VsCode.Contracts;
 using AutoMapper;
-using BankListAPI.VsCode.Models.Bank;
+using BankListAPI.VsCode.Core.Contracts;
+using BankListAPI.VsCode.Core.Models.Bank;
+using BankListAPI.VsCode.Data.Data;
 
 namespace BankListAPI.VsCode.Controllers
 {
