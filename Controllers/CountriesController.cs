@@ -39,9 +39,10 @@ namespace BankListAPI.VsCode.Controllers
               return NotFound();
           }
 
-            var countires = await _countriesRepository.GetAllAsync();
-            var records = _mapper.Map<List<GetCountryDto>>(countires);
-            return Ok(records);
+            //var countires = await _countriesRepository.GetAllAsync();
+            //var records = _mapper.Map<List<GetCountryDto>>(countires);
+            var countries = await _countriesRepository.GetAllAsync();
+            return Ok(countries);
         }
 
         // GET: api/Countries/?StartIndex=0&PageSize=25&PageNumber=1
@@ -67,13 +68,14 @@ namespace BankListAPI.VsCode.Controllers
               return NotFound();
           }
 
-            var country = await _countriesRepository.GetDetails(id);
+            //var country = await _countriesRepository.GetDetails(id);
 
-            if (country == null)
-            {
-                throw new NotFoundExceptions(nameof(GetCountry), id);
-            }
-            var record = _mapper.Map<CountryDto>(country);
+            //if (country == null)
+            //{
+            //    throw new NotFoundExceptions(nameof(GetCountry), id);
+            //}
+            //var record = _mapper.Map<CountryDto>(country);
+            var record = await _countriesRepository.GetDetails(id);
 
             return record;
         }
@@ -88,16 +90,16 @@ namespace BankListAPI.VsCode.Controllers
                 return BadRequest();
             }
 
-            var country = await _countriesRepository.GetAsync(id);
-            if (country == null)
-            {
-                throw new NotFoundExceptions(nameof(PutCountry), id);
-            }
-            _mapper.Map(updateCountry,country);
+            //var country = await _countriesRepository.GetAsync(id);
+            //if (country == null)
+            //{
+            //    throw new NotFoundExceptions(nameof(PutCountry), id);
+            //}
+            //_mapper.Map(updateCountry,country);
 
             try
             {
-                await _countriesRepository.UpdateAsync(country);
+                await _countriesRepository.UpdateAsync(id, updateCountry);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -119,14 +121,14 @@ namespace BankListAPI.VsCode.Controllers
         [HttpPost]
         public async Task<ActionResult<CreateCountryDto>> PostCountry(CreateCountryDto createCountry)
         {
-            var country = _mapper.Map<Country>(createCountry);
+            //var country = _mapper.Map<Country>(createCountry);
 
-            if (_countriesRepository == null)
-            {
-              return Problem("Entity set 'BankListDbContext.Countries'  is null.");
-            }
+            //if (_countriesRepository == null)
+            //{
+            //  return Problem("Entity set 'BankListDbContext.Countries'  is null.");
+            //}
 
-            await _countriesRepository.AddAsync(country);
+            var country = await _countriesRepository.AddAsync<CreateCountryDto,GetCountryDto>(createCountry);
 
             return CreatedAtAction("GetCountry", new { id = country.Id }, country);
         }
@@ -135,15 +137,15 @@ namespace BankListAPI.VsCode.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCountry(int id)
         {
-            if (_countriesRepository == null)
-            {
-                return NotFound();
-            }
-            var country = await _countriesRepository.GetAsync(id);
-            if (country == null)
-            {
-                return NotFound();
-            }
+            //if (_countriesRepository == null)
+            //{
+            //    return NotFound();
+            //}
+            //var country = await _countriesRepository.GetAsync(id);
+            //if (country == null)
+            //{
+            //    return NotFound();
+            //}
 
             await _countriesRepository.DeleteAsync(id);
 
