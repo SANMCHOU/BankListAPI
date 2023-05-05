@@ -11,6 +11,7 @@ using AutoMapper;
 using BankListAPI.VsCode.Contracts;
 using System.Diagnostics.Metrics;
 using BankListAPI.VsCode.Exceptions;
+using BankListAPI.VsCode.Models;
 
 namespace BankListAPI.VsCode.Controllers
 {
@@ -30,7 +31,7 @@ namespace BankListAPI.VsCode.Controllers
         }
 
         // GET: api/Countries
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
           if (_countriesRepository == null)
@@ -41,6 +42,20 @@ namespace BankListAPI.VsCode.Controllers
             var countires = await _countriesRepository.GetAllAsync();
             var records = _mapper.Map<List<GetCountryDto>>(countires);
             return Ok(records);
+        }
+
+        // GET: api/Countries/?StartIndex=0&PageSize=25&PageNumber=1
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<GetCountryDto>>> GetPagedCountries([FromQuery] QueryParameters 
+            queryParameters)
+        {
+            if (_countriesRepository == null)
+            {
+                return NotFound();
+            }
+
+            var pagedCountriesResult = await _countriesRepository.GetAllAsync<GetCountryDto>(queryParameters);
+            return Ok(pagedCountriesResult);
         }
 
         // GET: api/Countries/5

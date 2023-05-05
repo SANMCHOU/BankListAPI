@@ -1,4 +1,5 @@
-﻿using BankListAPI.VsCode.Contracts;
+﻿using AutoMapper;
+using BankListAPI.VsCode.Contracts;
 using BankListAPI.VsCode.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,9 +8,11 @@ namespace BankListAPI.VsCode.Repository
     public class CountryRepository : GenericRepository<Country>, ICountriesRepository
     {
         private readonly BankListDbContext _context;
-        public CountryRepository(BankListDbContext context) : base(context)
+        private readonly IMapper _mapper;
+        public CountryRepository(BankListDbContext context, IMapper mapper) : base(context, mapper)
         {
             this._context = context;
+            this._mapper = mapper;
         }
 
         public async Task<Country> GetDetails(int id)
