@@ -14,16 +14,16 @@ using BankListAPI.VsCode.Exceptions;
 
 namespace BankListAPI.VsCode.Controllers
 {
-   // [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     [Route("api/v{version:apiVersion}/countries")]
     [ApiController]
-    [ApiVersion("1.0", Deprecated = true)]
-    public class CountriesController : ControllerBase
+    [ApiVersion("2.0")]
+    public class CountriesV2Controller : ControllerBase
     {
         private readonly ICountriesRepository _countriesRepository;
         private readonly IMapper _mapper;
 
-        public CountriesController(ICountriesRepository countriesRepository, IMapper mapper)
+        public CountriesV2Controller(ICountriesRepository countriesRepository, IMapper mapper)
         {
             _countriesRepository = countriesRepository;
             _mapper = mapper;
