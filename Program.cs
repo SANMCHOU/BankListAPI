@@ -1,3 +1,5 @@
+using BankListAPI.VsCode.Data;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+});
+
+var connectionString = builder.Configuration.GetConnectionString("BankListDbConnectionString");
+builder.Services.AddDbContext<BankListDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
 });
 
 var app = builder.Build();
